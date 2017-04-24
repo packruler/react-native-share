@@ -31,6 +31,7 @@ public class ShareFile {
     private Uri uri;
     private String type;
     private String extension = "";
+    private String title;
 
     public ShareFile(String url, String type, ReactApplicationContext reactContext) {
         this(url, reactContext);
@@ -128,7 +129,14 @@ public class ShareFile {
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
-                File file = new File(dir, System.currentTimeMillis() + "." + this.extension);
+
+                String title;
+                if (this.title != null)
+                    title = this.title;
+                else
+                    title = String.valueOf(System.currentTimeMillis());
+
+                File file = new File(dir, title + "." + this.extension);
                 final FileOutputStream fos = new FileOutputStream(file);
                 fos.write(Base64.decode(encodedImg, Base64.DEFAULT));
                 fos.flush();
@@ -139,24 +147,13 @@ public class ShareFile {
                 e.printStackTrace();
             }
         } else if (this.isLocalFile()) {
-            Uri uri = Uri.parse(this.url);
-            File file = new File(uri.getPath());
-            try {
-                Uri fileUri = FileProvider.getUriForFile(
-                        this.reactContext.getApplicationContext(),
-                        this.reactContext.getPackageName(),
-                        file);
-                Log.i("File","URI: "+fileUri.getPath());
-                return fileUri;
-            } catch (IllegalArgumentException e) {
-                Log.e("File Selector",
-                        "The selected file can't be shared: " +
-                                file.getName());
-            }
-
-            return uri;
+            return Uri.parse(this.url);
         }
 
         return null;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

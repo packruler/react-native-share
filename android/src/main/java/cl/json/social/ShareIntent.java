@@ -58,11 +58,15 @@ public abstract class ShareIntent {
         }
     }
     protected ShareFile getFileShare(ReadableMap options) {
+        ShareFile shareFile;
         if (ShareIntent.hasValidKey("type", options)) {
-            return new ShareFile(options.getString("url"), options.getString("type"), this.reactContext);
+            shareFile= new ShareFile(options.getString("url"), options.getString("type"), this.reactContext);
         } else {
-            return new ShareFile(options.getString("url"), this.reactContext);
+            shareFile= new ShareFile(options.getString("url"), this.reactContext);
         }
+        if(ShareIntent.hasValidKey("title",options))
+            shareFile.setTitle(options.getString("title"));
+        return shareFile;
     }
     protected static String urlEncode(String param) {
         try {
